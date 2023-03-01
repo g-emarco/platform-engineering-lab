@@ -2,6 +2,8 @@ import argparse
 import os
 import requests
 
+PLATFORM_API_BASE_URL = os.environ.get("PLATFORM_API_BASE_URL", "http://127.0.0.1:80/")
+
 
 def get_auth_token():
     command = "gcloud auth print-identity-token"
@@ -9,9 +11,8 @@ def get_auth_token():
     return result
 
 
-def get_objects(bucket_name):
-    cloud_run_url = f"https://www.cool-bucket.com/buckets/"
-    url = f"{cloud_run_url}/{bucket_name}"
+def access_bucket(bucket_name):
+    url = f"{PLATFORM_API_BASE_URL}/request_access_for_bucket?bucket={bucket_name}"
     headers = {"Authorization": f"Bearer {get_auth_token()}"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
@@ -24,14 +25,23 @@ def get_objects(bucket_name):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="List objects in a Google Cloud Storage bucket"
+        prog="""
+.______    __          ___   .___________. _______   ______   .______      .___  ___.      ______  __       __  
+|   _  \  |  |        /   \  |           ||   ____| /  __  \  |   _  \     |   \/   |     /      ||  |     |  | 
+|  |_)  | |  |       /  ^  \ `---|  |----`|  |__   |  |  |  | |  |_)  |    |  \  /  |    |  ,----'|  |     |  | 
+|   ___/  |  |      /  /_\  \    |  |     |   __|  |  |  |  | |      /     |  |\/|  |    |  |     |  |     |  | 
+|  |      |  `----./  _____  \   |  |     |  |     |  `--'  | |  |\  \----.|  |  |  |    |  `----.|  `----.|  | 
+| _|      |_______/__/     \__\  |__|     |__|      \______/  | _| `._____||__|  |__|     \______||_______||__| 
+                                                                                                                
+        """,
+        description="Request access to Google Cloud Storage bucket",
+        epilog="cool",
     )
     parser.add_argument(
-        "--bucket-name", help="Name of the bucket to list objects from", required=True
+        "--bucket-name", help="Name of the bucket get access to", required=True
     )
     args = parser.parse_args()
-
-    get_objects(args.bucket_name)
+    access_bucket(args.bucket_name)
 
 
 if __name__ == "__main__":

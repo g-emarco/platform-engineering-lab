@@ -5,3 +5,4 @@ bucket_name_set = [
 ]
 
 project_id = "platform-playground4"
+project_number = "225414062649"

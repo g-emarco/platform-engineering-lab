@@ -12,6 +12,16 @@ resource "google_storage_bucket_object" "txt_files" {
   content = "You successfully accessed a file in the bucket-${each.key}"
 }
 
+resource "google_project_service" "run_api" {
+  service = "run.googleapis.com"
+}
+
+
+resource "google_project_service" "services" {
+  for_each = toset(var.services)
+  project                    = var.project_id
+  service                    = each.key
+}
 
 
 
@@ -38,4 +48,16 @@ resource "google_project_iam_member" "service_account_admin_role" {
   project = var.project_id
   role    = "roles/iam.serviceAccountAdmin"
   member  = "serviceAccount:${google_service_account.bucket_accessor_sa.email}"
+}
+
+resource "google_project_iam_member" "service_account_firebase_admin_role" {
+  project = var.project_id
+  role    = "roles/firebase.sdkAdminServiceAgent"
+  member  = "serviceAccount:${google_service_account.bucket_accessor_sa.email}"
+}
+
+resource "google_project_iam_member" "cloud_build_sa_bucket_permission" {
+  project = var.project_id
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
 }
