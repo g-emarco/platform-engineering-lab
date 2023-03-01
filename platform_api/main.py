@@ -71,10 +71,16 @@ def grant_access(email):
                 doc_ref.delete()
                 return {"message": "No Access to bucket"}, 403
         else:
-            return {"message": "No Access to bucket"}, 403
+            return {"message": "No Access to bucket, bucket not found"}, 403
 
-    doc_ref = db.collection("users").document(email)
-    doc_ref.set({"buckets_allowed": []})
+    doc_ref = (
+        db.collection("users")
+        .document(email)
+        .collection("allowed_buckets")
+        .document("example_bucket")
+    )
+    doc_ref.set({"time_added": datetime.datetime.utcnow()})
+    return {"message": "No Access to bucket"}, 403
 
 
 if __name__ == "__main__":
