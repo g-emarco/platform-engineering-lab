@@ -60,4 +60,8 @@ resource "google_project_iam_member" "cloud_build_sa_bucket_permission" {
   project = var.project_id
   role    = "roles/storage.admin"
   member  = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
+
+    depends_on = [
+    google_project_service.services
+  ]
 }

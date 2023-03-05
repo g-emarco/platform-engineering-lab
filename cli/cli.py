@@ -19,7 +19,7 @@ def access_bucket(bucket_name):
         print(response.json())
     else:
         print(
-            f"Failed to get objects from {bucket_name}. Status code: {response.status_code}"
+            f"No Access to {bucket_name}, please request permissions"
         )
 
 
@@ -35,7 +35,6 @@ def main():
                                                                                                                 
         """,
         description="Request access to Google Cloud Storage bucket",
-        epilog="cool",
     )
     parser.add_argument(
         "--bucket-name", help="Name of the bucket get access to", required=True

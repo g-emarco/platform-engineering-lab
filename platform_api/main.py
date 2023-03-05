@@ -43,8 +43,8 @@ def grant_user_access_to_bucket(email, bucket_id):
 @login_is_required
 def grant_access(email):
     bucket = request.args.get("bucket")
-
-    doc_ref = db.collection("users").document(email)
+    print(f"user {email} is trying to access bucket {bucket}")
+    doc_ref = db.collection("users").document(str(email))
     doc = doc_ref.get()
     if doc.exists:
         print(f"user {email} exists, not writing in firestore")
@@ -61,7 +61,7 @@ def grant_access(email):
                 time_added
                 and datetime.datetime.utcnow()
                 - datetime.datetime.fromtimestamp(time_added.timestamp())
-                < datetime.timedelta(hours=1)
+                < datetime.timedelta(hours=2)
             ):
                 grant_user_access_to_bucket(email=email, bucket_id=bucket)
                 return {"message": "Granted 1 hour access for bucket"}
@@ -73,6 +73,7 @@ def grant_access(email):
         else:
             return {"message": "No Access to bucket, bucket not found"}, 403
 
+    db.collection("users").document(email).set({})
     doc_ref = (
         db.collection("users")
         .document(email)
