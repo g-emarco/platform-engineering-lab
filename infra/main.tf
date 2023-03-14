@@ -1,9 +1,34 @@
+terraform {
+  required_providers {
+    random = {
+      source = "hashicorp/random"
+      version = "3.4.3"
+    }
+  }
+}
+
+provider "random" {
+  # Configuration options
+}
+
+resource "random_uuid" "uuid_for_bucket" {
+}
+
+
+#resource "google_storage_bucket" "my_bucket_set" {
+#  for_each      = toset(var.bucket_name_set)
+#  name          = each.value${random_uuid.uuid_for_bucket.result}
+#  location      = "EU"
+#  uniform_bucket_level_access = true
+#}
+
 resource "google_storage_bucket" "my_bucket_set" {
   for_each      = toset(var.bucket_name_set)
-  name          = each.value
+  name          = "${each.value}-${random_uuid.uuid_for_bucket.result}"
   location      = "EU"
   uniform_bucket_level_access = true
 }
+
 
 resource "google_storage_bucket_object" "txt_files" {
   for_each = google_storage_bucket.my_bucket_set
