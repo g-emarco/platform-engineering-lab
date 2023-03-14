@@ -14,14 +14,6 @@ provider "random" {
 resource "random_uuid" "uuid_for_bucket" {
 }
 
-
-#resource "google_storage_bucket" "my_bucket_set" {
-#  for_each      = toset(var.bucket_name_set)
-#  name          = each.value${random_uuid.uuid_for_bucket.result}
-#  location      = "EU"
-#  uniform_bucket_level_access = true
-#}
-
 resource "google_storage_bucket" "my_bucket_set" {
   for_each      = toset(var.bucket_name_set)
   name          = "${each.value}-${random_uuid.uuid_for_bucket.result}"
@@ -33,7 +25,7 @@ resource "google_storage_bucket" "my_bucket_set" {
 resource "google_storage_bucket_object" "txt_files" {
   for_each = google_storage_bucket.my_bucket_set
   name   = "some-file.txt"
-  bucket = each.key
+  bucket = google_storage_bucket.my_bucket_set[each.key].name
   content = "You successfully accessed a file in the bucket-${each.key}"
 }
 
